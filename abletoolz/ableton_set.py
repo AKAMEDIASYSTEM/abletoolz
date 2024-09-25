@@ -326,11 +326,14 @@ class AbletonSet(object):
         """Get bpm from Ableton Live set XML."""
         if self.version_tuple is None:
             raise SetError("Set version is not parsed!")
+        post_11_bpm = "LiveSet.MainTrack.DeviceChain.Mixer.Tempo.Manual"
         post_10_bpm = "LiveSet.MasterTrack.DeviceChain.Mixer.Tempo.Manual"
         pre_10_bpm = "LiveSet.MasterTrack.MasterChain.Mixer.Tempo.ArrangerAutomation.Events.FloatEvent"
         pre_10_bpm = "LiveSet.MasterTrack.DeviceChain.Mixer.Tempo.ArrangerAutomation.Events.FloatEvent"
         major, minor, _ = self.version_tuple
-        if major >= 10 or major >= 9 and minor >= 7:
+        if major >= 11:
+            bpm_elem = get_element(self.root, post_11_bpm, attribute="Value", silent_error=True)
+        elif major >= 10 or major >= 9 and minor >= 7:
             bpm_elem = get_element(self.root, post_10_bpm, attribute="Value", silent_error=True)
         else:
             bpm_elem = get_element(self.root, pre_10_bpm, attribute="Value")
