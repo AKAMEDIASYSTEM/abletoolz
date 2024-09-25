@@ -240,7 +240,7 @@ def process_set(args: argparse.Namespace, pathlib_obj: pathlib.Path, db: Optiona
     #     backup = copy.deepcopy(ableton_set)
 
     if args.master_out:
-        ableton_set.set_audio_output(args.master_out, element_string="MasterTrack")
+        ableton_set.set_audio_output(args.master_out, element_string="MainTrack")
     if args.cue_out:
         ableton_set.set_audio_output(args.cue_out, element_string="PreHearTrack")
     if args.fold:
