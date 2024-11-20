@@ -183,19 +183,30 @@ class AbletonSet(object):
             if first_two_bytes == b"\xab\x1e":  # yes, it spells able :P
                 logger.error("%s%sIs pre Ableton 8.2.x which is unsupported.", R, self.path)
                 return False
-            elif first_two_bytes != b"\x1f\x8b":
+            # elif first_two_bytes != b"\x1f\x8b":
+            elif first_two_bytes not in (b"\x1f\x8b", b"\x3c\x3f"):
                 logger.error(
                     "%s%sFile is not .als or is an older format that doesn't use gzip!, cannot open...", R, self.path
                 )
                 return False
         self.get_file_times()
-        with gzip.open(self.path, "r") as fd:
-            data = fd.read().decode("utf-8")
-            if not data:
-                logger.error("%sError loading data %s!", R, self.path)
-                return False
-            self.root = ET.fromstring(data)
+        if first_two_bytes == b"\x1f\x8b":
+            with gzip.open(self.path, "r") as fd:
+                data = fd.read().decode("utf-8")
+                if not data:
+                    logger.error("%sError loading data %s!", R, self.path)
+                    return False
+                self.root = ET.fromstring(data)
+                return True
+        else:
+            with open(self.path, "r") as fd:
+                data = fd.read()
+                if not data:
+                    logger.error("%sError loading data %s!", R, self.path)
+                    return False
+                self.root = ET.fromstring(data)
             return True
+        return True
 
     def find_project_root_folder(self) -> Optional[pathlib.Path]:
         """Find project root folder for set."""
